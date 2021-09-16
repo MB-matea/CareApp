@@ -21,7 +21,7 @@ public class Resident {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer residentId;
+    private Integer id;
 
     @Column
     private String name;
