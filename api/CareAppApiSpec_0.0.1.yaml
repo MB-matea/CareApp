@@ -1,0 +1,554 @@
+openapi: 3.0.1
+info:
+  title: Care App
+  description: 'This is a server that will be used as a backend for the Care App'
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+paths:
+  /login:
+    post:
+      tags:
+      - Log in
+      summary: Log in
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestBody'
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseBody'
+        400:
+          description: Login error
+          
+  /residents:
+    get:
+      tags:
+      - Residents
+      summary: Get all residents
+      responses:
+        200:
+          description: Returns all residents
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllResidentsResponseBody'
+    post:
+      tags:
+      - Residents
+      summary: Create a new resident
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resident'
+      responses:
+        200:
+          description: New resident created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnId'
+        400:
+          description: Invalid data
+            
+  /residents/{residentId}:
+    get:
+      tags:
+      - Residents
+      summary: Get a specific resident
+      parameters:
+      - name: residentId
+        in: path
+        description: ID of the resident
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        description: Date for therapy plan filtering
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        200:
+          description: Resident queried by the ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSpecificResidentResponseBody'
+        404:
+          description: Resident not found
+          
+    put:
+      tags:
+      - Residents
+      summary: Update a specific resident
+      parameters:
+      - name: residentId
+        in: path
+        description: ID of the resident
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resident'
+      responses:
+        200:
+          description: Update operation succeeded
+        404:
+          description: Resident does not exist
+        400:
+          description: Invalid data
+          
+    delete:
+      tags:
+      - Residents
+      summary: Delete a specific resident
+      parameters:
+      - name: residentId
+        in: path
+        description: ID of the resident
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Delete operation succeeded
+        404:
+          description: Resident does not exist
+          
+  /users:
+    get:
+      tags:
+      - Users
+      summary: Get all users
+      responses:
+        200:
+          description: Returns all users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllUsersResponseBody'
+    
+    post:
+      tags:
+      - Users
+      summary: Create a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: Create operation success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnId'
+        400:
+          description: Invalid data
+          
+  /users/{userId}:
+    get:
+      tags:
+      - Users
+      summary: Get a specific user
+      parameters:
+      - name: userId
+        in: path
+        description: ID of the user
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: User queried by the ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSpecificUserResponseBody'
+        404:
+          description: User not found
+          
+    put:
+      tags:
+      - Users
+      summary: Update a specific user
+      parameters:
+      - name: userId
+        in: path
+        description: ID of the user
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: Update operation success
+        404:
+          description: User not found
+        400:
+          description: Invalid data
+          
+    delete:
+      tags:
+      - Users
+      summary: Delete a specific user
+      parameters:
+      - name: userId
+        in: path
+        description: ID of the user
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Delete operation success
+        404:
+          description: User not found
+       
+  /tasks:
+    post:
+      tags:
+      - Tasks
+      summary: Create a new task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNewTaskRequestBody'
+      responses:
+        200:
+          description: Create operation success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnId'
+        400:
+          description: Invalid data
+  
+  /tasks/{taskId}:
+    delete:
+      tags:
+      - Tasks
+      summary: Delete a specific task
+      parameters:
+      - name: taskId
+        in: path
+        description: ID of the task
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Delete operation success
+        404:
+          description: Task not found
+          
+    put:
+      tags:
+      - Tasks
+      summary: Update a specific task
+      parameters:
+      - name: taskId
+        in: path
+        description: ID of the task
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        200:
+          description: Update operation success
+        404:
+          description: Task not found
+        400:
+          description: Invalid data
+
+
+  /tasks/{userId}:
+    get:
+      tags:
+      - Tasks
+      summary: Get all tasks for a specific user
+      parameters:
+      - name: userId
+        in: path
+        description: ID of the user
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        description: Date for task filtering
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        200:
+          description: Returns all tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllTasksForSpecificUserResponseBody'
+        
+  
+  /therapyplan/{therapyId}:
+    patch:
+      tags:
+      - Therapy plan
+      summary: Update therapy plan
+      parameters:
+      - name: therapyId
+        in: path
+        description: ID of the therapy
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isDone:
+                  type: boolean
+      responses:
+        200:
+          description: Update operation success
+        404:
+          description: Therapy plan not found
+        400:
+          description: Invalid data
+      
+
+  
+components:
+  schemas:
+    LoginRequestBody:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+          
+    LoginResponseBody:
+      type: object
+      properties:
+        userId:
+          type: integer
+        name:
+          type: string
+        lastName:
+          type: string
+        isAdmin:
+          type: boolean
+          
+    GetAllResidentsResponseBody:
+      type: array
+      items:
+        type: object
+        properties:
+          residentId:
+            type: integer
+          name:
+            type: string
+          lastName:
+            type: string
+          room:
+            type: integer
+          
+    Resident:
+      type: object
+      properties:
+        residentId:
+          type: integer
+        name:
+          type: string
+        lastName:
+          type: string
+        oib:
+          type: string
+        room:
+          type: integer
+        dateOfBirth:
+          type: string
+          format: date
+        placeOfBirth:
+          type: string
+        citizenship:
+          type: string
+        nationality:
+          type: string
+        idCard:
+          type: string
+        contactName:
+          type: string
+        contactRelationship:
+          type: string
+        contactNumber:
+          type: string
+        contactEmail:
+          type: string
+        contactAddress:
+          type: string
+        mobility:
+          type: string
+          enum:
+          - MOBILE
+          - IMMOBILE
+        independence:
+          type: string
+          enum:
+          - INDEPENDENT
+          - NECESSARY_AID
+          - COMPLETELY_DEPENDENT
+        note:
+          type: string
+          
+    ReturnId:
+      type: object
+      properties:
+        id:
+          type: integer
+          
+    GetSpecificResidentResponseBody:
+      type: object
+      properties:
+        resident:
+           $ref: '#/components/schemas/Resident'
+        therapies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Therapy'
+        therapyPlans:
+           type: array
+           items:
+            $ref: '#/components/schemas/TherapyPlan'
+        
+    Therapy:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        quantity:
+          type: integer
+    
+    TherapyPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        isDone:
+          type: boolean
+          
+    GetAllUsersResponseBody:
+      type: array
+      items:
+        type: object
+        properties:
+          userId:
+            type: integer
+          name:
+            type: string
+          lastName:
+            type: string
+            
+    User:
+      type: object
+      properties:
+        userId:
+          type: integer
+        name:
+          type: string
+        lastName:
+          type: string
+        userName:
+          type: string
+        password:
+          type: string
+        isAdmin:
+          type: boolean
+        address:
+          type: string
+        number:
+          type: string
+        email:
+          type: string
+          
+    Task:
+      type: object
+      properties:
+        taskId:
+          type: integer
+        date:
+          type: string
+          format: date
+        isDone:
+          type: boolean
+        userId:
+          type: integer
+        residentId:
+          type: integer
+        residentName:
+          type: string
+        residentLastName:
+          type: string
+          
+    GetSpecificUserResponseBody:
+      type: object
+      properties:
+        user:
+           $ref: '#/components/schemas/User'
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+    
+    CreateNewTaskRequestBody:
+      type: object
+      properties:
+        residentId:
+          type: integer
+        userId:
+          type: integer
+        date:
+          type: string
+          format: date
+          
+    GetAllTasksForSpecificUserResponseBody:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+    
+
+    
