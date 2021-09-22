@@ -1,8 +1,12 @@
 package hr.aspira.careapp.backend.controller;
 
 import hr.aspira.careapp.backend.model.entities.IndependenceStatus;
+import hr.aspira.careapp.backend.model.entities.MobilityStatus;
 import hr.aspira.careapp.backend.model.repositories.ResidentRepository;
+import hr.aspira.careapp.backend.model.repositories.TaskRepository;
+import hr.aspira.careapp.backend.model.repositories.TherapyPlanRepository;
 import hr.aspira.careapp.backend.model.repositories.TherapyRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.ResidentsApi;
 import org.openapitools.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.*;
 
+@Slf4j
 @Controller
 public class ResidentsController implements ResidentsApi {
     @Autowired
@@ -23,6 +25,12 @@ public class ResidentsController implements ResidentsApi {
 
     @Autowired
     private TherapyRepository therapyRepository;
+
+    @Autowired
+    private TherapyPlanRepository therapyPlanRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Override
     public ResponseEntity<GetAllResidentsResponseBody> residentsGet() {
@@ -48,16 +56,65 @@ public class ResidentsController implements ResidentsApi {
 
     @Override
     public ResponseEntity<ReturnId> residentsPost(Resident resident) {
-        return ResidentsApi.super.residentsPost(resident);
+        hr.aspira.careapp.backend.model.entities.Resident residentNew = new hr.aspira.careapp.backend.model.entities.Resident();
+
+        residentNew.setName(resident.getName());
+        residentNew.setLastName(resident.getLastName());
+        residentNew.setIdCard(resident.getIdCard());
+        residentNew.setCitizenship(resident.getCitizenship());
+        residentNew.setContactAddress(resident.getContactAddress());
+        residentNew.setContactEmail(resident.getContactEmail());
+        residentNew.setContactName(resident.getContactName());
+        residentNew.setContactNumber(resident.getContactNumber());
+        residentNew.setContactRelationship(resident.getContactRelationship());
+        residentNew.setDateOfBirth(resident.getDateOfBirth());
+        residentNew.setPlaceOfBirth(resident.getPlaceOfBirth());
+        residentNew.setNote(resident.getNote());
+        residentNew.setOib(resident.getOib());
+        residentNew.setRoom(resident.getRoom());;
+        residentNew.setNacionality(resident.getNationality());
+        residentNew.setIndependence(IndependenceStatus.valueOf(resident.getIndependence().toString()));
+        residentNew.setMobility(MobilityStatus.valueOf(resident.getMobility().toString()));
+        residentNew.setId(resident.getResidentId());
+
+        ReturnId response = new ReturnId();
+        response.setId(residentNew.getId());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @Override
     public ResponseEntity<Void> residentsResidentIdDelete(Integer residentId) {
-        return ResidentsApi.super.residentsResidentIdDelete(residentId);
+        Optional<hr.aspira.careapp.backend.model.entities.Resident> residents = residentRepository.findById(residentId);
+        if(residents.isPresent()){
+            hr.aspira.careapp.backend.model.entities.Resident resident = residents.get();
+            List<hr.aspira.careapp.backend.model.entities.Therapy> therapies = resident.getTherapies();
+            List<hr.aspira.careapp.backend.model.entities.TherapyPlan> therapyPlans = resident.getTherapyPlans();
+            List<hr.aspira.careapp.backend.model.entities.Task> tasks = resident.getTasks();
+
+            for (hr.aspira.careapp.backend.model.entities.TherapyPlan therapyPlan : therapyPlans){
+                therapyPlanRepository.delete(therapyPlan);
+            }
+
+            for (hr.aspira.careapp.backend.model.entities.Therapy therapy : therapies){
+                therapyRepository.delete(therapy);
+            }
+
+            for (hr.aspira.careapp.backend.model.entities.Task task : tasks){
+                taskRepository.delete(task);
+            }
+
+            residentRepository.delete(resident);
+        }
+
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     public ResponseEntity<GetSpecificResidentResponseBody> residentsResidentIdGet(Integer residentId, LocalDate date) {
+        log.info(String.valueOf(date));
+
         Optional<hr.aspira.careapp.backend.model.entities.Resident> residents = residentRepository.findById(residentId);
 
         if(!residents.isPresent()){
@@ -136,6 +193,29 @@ public class ResidentsController implements ResidentsApi {
 
     @Override
     public ResponseEntity<Void> residentsResidentIdPut(Integer residentId, Resident resident) {
-        return ResidentsApi.super.residentsResidentIdPut(residentId, resident);
+        Optional<hr.aspira.careapp.backend.model.entities.Resident> residentsNew = residentRepository.findById(residentId);
+        hr.aspira.careapp.backend.model.entities.Resident residentNew = residentsNew.get();
+
+        residentNew.setName(resident.getName());
+        residentNew.setLastName(resident.getLastName());
+        residentNew.setIdCard(resident.getIdCard());
+        residentNew.setCitizenship(resident.getCitizenship());
+        residentNew.setContactAddress(resident.getContactAddress());
+        residentNew.setContactEmail(resident.getContactEmail());
+        residentNew.setContactName(resident.getContactName());
+        residentNew.setContactNumber(resident.getContactNumber());
+        residentNew.setContactRelationship(resident.getContactRelationship());
+        residentNew.setDateOfBirth(resident.getDateOfBirth());
+        residentNew.setPlaceOfBirth(resident.getPlaceOfBirth());
+        residentNew.setNote(resident.getNote());
+        residentNew.setOib(resident.getOib());
+        residentNew.setRoom(resident.getRoom());;
+        residentNew.setNacionality(resident.getNationality());
+        residentNew.setIndependence(IndependenceStatus.valueOf(resident.getIndependence().toString()));
+        residentNew.setMobility(MobilityStatus.valueOf(resident.getMobility().toString()));
+
+        residentRepository.save(residentNew);
+
+        return ResponseEntity.noContent().build();
     }
 }
