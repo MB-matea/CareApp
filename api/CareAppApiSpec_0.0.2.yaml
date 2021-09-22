@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Care App
   description: 'This is a server that will be used as a backend for the Care App'
-  version: 0.0.1
+  version: 0.0.2
 servers:
 - url: http://localhost:8080
 paths:
@@ -366,18 +366,21 @@ components:
           type: boolean
           
     GetAllResidentsResponseBody:
-      type: array
-      items:
-        type: object
-        properties:
-          residentId:
-            type: integer
-          name:
-            type: string
-          lastName:
-            type: string
-          room:
-            type: integer
+      type: object
+      properties:
+        residents:
+          type: array
+          items:
+            type: object
+            properties:
+              residentId:
+                type: integer
+              name:
+                type: string
+              lastName:
+                type: string
+              room:
+                type: integer
           
     Resident:
       type: object
