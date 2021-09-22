@@ -77,7 +77,7 @@ public class UsersController implements UsersApi {
             userRepository.delete(user);
         }
 
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
@@ -149,6 +149,6 @@ public class UsersController implements UsersApi {
 
         userRepository.save(userNew);
 
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

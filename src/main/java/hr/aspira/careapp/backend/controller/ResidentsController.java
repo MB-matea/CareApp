@@ -108,7 +108,7 @@ public class ResidentsController implements ResidentsApi {
             residentRepository.delete(resident);
         }
 
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
@@ -216,6 +216,6 @@ public class ResidentsController implements ResidentsApi {
 
         residentRepository.save(residentNew);
 
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
