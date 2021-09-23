@@ -135,6 +135,11 @@ public class UsersController implements UsersApi {
     @Override
     public ResponseEntity<Void> usersUserIdPut(Integer userId, User user) {
         Optional<hr.aspira.careapp.backend.model.entities.User> usersNew = userRepository.findById(userId);
+
+        if(!usersNew.isPresent()){
+            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         hr.aspira.careapp.backend.model.entities.User userNew = usersNew.get();
 
         userNew.setName(user.getName());

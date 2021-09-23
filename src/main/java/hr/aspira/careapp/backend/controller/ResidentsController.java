@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.ResidentsApi;
 import org.openapitools.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -112,7 +113,7 @@ public class ResidentsController implements ResidentsApi {
     }
 
     @Override
-    public ResponseEntity<GetSpecificResidentResponseBody> residentsResidentIdGet(Integer residentId, LocalDate date) {
+    public ResponseEntity<GetSpecificResidentResponseBody> residentsResidentIdGet(Integer residentId, @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX") LocalDate date) {
         log.info(String.valueOf(date));
 
         Optional<hr.aspira.careapp.backend.model.entities.Resident> residents = residentRepository.findById(residentId);
