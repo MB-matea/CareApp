@@ -19,12 +19,12 @@ public class TherapyplanController implements TherapyplanApi {
     private TherapyPlanRepository therapyPlanRepository;
 
     @Override
-    public ResponseEntity<Void> therapyplanTherapyIdPatch(Integer therapyId, InlineObject inlineObject) {
-        Optional<TherapyPlan> therapyPlan = therapyPlanRepository.findById(therapyId);
+    public ResponseEntity<Void> therapyplanTherapyplanIdPatch(Integer therapyplanId, InlineObject inlineObject) {
+        Optional<TherapyPlan> therapyPlan = therapyPlanRepository.findById(therapyplanId);
 
         if(!therapyPlan.isPresent()){
-            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+                    return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
 
         hr.aspira.careapp.backend.model.entities.TherapyPlan therapyPlanNew = therapyPlan.get();
 
@@ -34,5 +34,7 @@ public class TherapyplanController implements TherapyplanApi {
         therapyPlanRepository.save(therapyPlanNew);
 
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
+
 }

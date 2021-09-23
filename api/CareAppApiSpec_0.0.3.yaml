@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Care App
   description: 'This is a server that will be used as a backend for the Care App'
-  version: 0.0.2
+  version: 0.0.3
 servers:
 - url: http://localhost:8080
 paths:
@@ -313,15 +313,15 @@ paths:
                 $ref: '#/components/schemas/GetAllTasksForSpecificUserResponseBody'
         
   
-  /therapyplan/{therapyId}:
+  /therapyplan/{therapyplanId}:
     patch:
       tags:
       - Therapy plan
       summary: Update therapy plan
       parameters:
-      - name: therapyId
+      - name: therapyplanId
         in: path
-        description: ID of the therapy
+        description: ID of the therapy plan
         required: true
         schema:
           type: integer
