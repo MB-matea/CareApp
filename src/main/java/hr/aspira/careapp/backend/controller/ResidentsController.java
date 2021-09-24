@@ -1,5 +1,6 @@
 package hr.aspira.careapp.backend.controller;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import hr.aspira.careapp.backend.model.entities.IndependenceStatus;
 import hr.aspira.careapp.backend.model.entities.MobilityStatus;
 import hr.aspira.careapp.backend.model.repositories.ResidentRepository;
@@ -15,7 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -59,6 +63,11 @@ public class ResidentsController implements ResidentsApi {
     public ResponseEntity<ReturnId> residentsPost(Resident resident) {
         hr.aspira.careapp.backend.model.entities.Resident residentNew = new hr.aspira.careapp.backend.model.entities.Resident();
 
+        String dateStr = resident.getDateOfBirth().toString();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);
+        ZonedDateTime dateZoned = format.parse(dateStr, ZonedDateTime::from);
+        LocalDate date = LocalDate.from( dateZoned.toInstant() );
+
         residentNew.setName(resident.getName());
         residentNew.setLastName(resident.getLastName());
         residentNew.setIdCard(resident.getIdCard());
@@ -68,7 +77,7 @@ public class ResidentsController implements ResidentsApi {
         residentNew.setContactName(resident.getContactName());
         residentNew.setContactNumber(resident.getContactNumber());
         residentNew.setContactRelationship(resident.getContactRelationship());
-        residentNew.setDateOfBirth(resident.getDateOfBirth());
+        residentNew.setDateOfBirth(date);
         residentNew.setPlaceOfBirth(resident.getPlaceOfBirth());
         residentNew.setNote(resident.getNote());
         residentNew.setOib(resident.getOib());
@@ -76,7 +85,9 @@ public class ResidentsController implements ResidentsApi {
         residentNew.setNacionality(resident.getNationality());
         residentNew.setIndependence(IndependenceStatus.valueOf(resident.getIndependence().toString()));
         residentNew.setMobility(MobilityStatus.valueOf(resident.getMobility().toString()));
-        residentNew.setId(resident.getResidentId());
+        //residentNew.setId(resident.getResidentId());
+
+        residentRepository.save(residentNew);
 
         ReturnId response = new ReturnId();
         response.setId(residentNew.getId());
