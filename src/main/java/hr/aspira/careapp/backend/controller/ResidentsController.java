@@ -73,29 +73,44 @@ public class ResidentsController implements ResidentsApi {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     @Override
-    public ResponseEntity<ReturnId> residentsPost(Resident resident) {
+    public ResponseEntity<ReturnId> residentsPost(CreateResidentRequestBody residentRequestBody) {
         hr.aspira.careapp.backend.model.entities.Resident residentNew = new hr.aspira.careapp.backend.model.entities.Resident();
 
-        residentNew.setName(resident.getName());
-        residentNew.setLastName(resident.getLastName());
-        residentNew.setIdCard(resident.getIdCard());
-        residentNew.setCitizenship(resident.getCitizenship());
-        residentNew.setContactAddress(resident.getContactAddress());
-        residentNew.setContactEmail(resident.getContactEmail());
-        residentNew.setContactName(resident.getContactName());
-        residentNew.setContactNumber(resident.getContactNumber());
-        residentNew.setContactRelationship(resident.getContactRelationship());
-        residentNew.setDateOfBirth(resident.getDateOfBirth());
-        residentNew.setPlaceOfBirth(resident.getPlaceOfBirth());
-        residentNew.setNote(resident.getNote());
-        residentNew.setOib(resident.getOib());
-        residentNew.setRoom(resident.getRoom());;
-        residentNew.setNacionality(resident.getNationality());
-        residentNew.setIndependence(IndependenceStatus.valueOf(resident.getIndependence().toString()));
-        residentNew.setMobility(MobilityStatus.valueOf(resident.getMobility().toString()));
-        //residentNew.setId(resident.getResidentId());
+        List<hr.aspira.careapp.backend.model.entities.Therapy> therapyList = new ArrayList<>();
+
+        residentNew.setName(residentRequestBody.getResident().getName());
+        residentNew.setLastName(residentRequestBody.getResident().getLastName());
+        residentNew.setIdCard(residentRequestBody.getResident().getIdCard());
+        residentNew.setCitizenship(residentRequestBody.getResident().getCitizenship());
+        residentNew.setContactAddress(residentRequestBody.getResident().getContactAddress());
+        residentNew.setContactEmail(residentRequestBody.getResident().getContactEmail());
+        residentNew.setContactName(residentRequestBody.getResident().getContactName());
+        residentNew.setContactNumber(residentRequestBody.getResident().getContactNumber());
+        residentNew.setContactRelationship(residentRequestBody.getResident().getContactRelationship());
+        residentNew.setDateOfBirth(residentRequestBody.getResident().getDateOfBirth());
+        residentNew.setPlaceOfBirth(residentRequestBody.getResident().getPlaceOfBirth());
+        residentNew.setNote(residentRequestBody.getResident().getNote());
+        residentNew.setOib(residentRequestBody.getResident().getOib());
+        residentNew.setRoom(residentRequestBody.getResident().getRoom());;
+        residentNew.setNacionality(residentRequestBody.getResident().getNationality());
+        residentNew.setIndependence(IndependenceStatus.valueOf(residentRequestBody.getResident().getIndependence().toString()));
+        residentNew.setMobility(MobilityStatus.valueOf(residentRequestBody.getResident().getMobility().toString()));
+
+        List<Therapy> requestTherapyList = residentRequestBody.getTherapy();
+
+        for (Therapy therapy : requestTherapyList){
+            hr.aspira.careapp.backend.model.entities.Therapy therapyNew = new hr.aspira.careapp.backend.model.entities.Therapy();
+
+            therapyNew.setName(therapy.getName());
+            therapyNew.setQuantity(therapy.getQuantity());
+            therapyNew.setResident(residentNew);
+            therapyList.add(therapyNew);
+        }
+
+        residentNew.setTherapies(therapyList);
 
         residentRepository.save(residentNew);
+        therapyRepository.save(residentNew.getTherapies().get(0));
 
         ReturnId response = new ReturnId();
         response.setId(residentNew.getId());
