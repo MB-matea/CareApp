@@ -1,6 +1,9 @@
 package hr.aspira.careapp.backend.controller;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import hr.aspira.careapp.backend.common.LocalDateDeserializer;
 import hr.aspira.careapp.backend.model.entities.IndependenceStatus;
 import hr.aspira.careapp.backend.model.entities.MobilityStatus;
 import hr.aspira.careapp.backend.model.repositories.ResidentRepository;
@@ -37,6 +40,15 @@ public class ResidentsController implements ResidentsApi {
     @Autowired
     private TaskRepository taskRepository;
 
+    private final ObjectMapper objectMapper;
+
+    public ResidentsController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+        this.objectMapper.registerModule(module);
+    }
+
     @Override
     public ResponseEntity<GetAllResidentsResponseBody> residentsGet() {
         List<hr.aspira.careapp.backend.model.entities.Resident> residents = residentRepository.findAll();
@@ -59,14 +71,10 @@ public class ResidentsController implements ResidentsApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     @Override
     public ResponseEntity<ReturnId> residentsPost(Resident resident) {
         hr.aspira.careapp.backend.model.entities.Resident residentNew = new hr.aspira.careapp.backend.model.entities.Resident();
-
-        String dateStr = resident.getDateOfBirth().toString();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ENGLISH);
-        ZonedDateTime dateZoned = format.parse(dateStr, ZonedDateTime::from);
-        LocalDate date = LocalDate.from( dateZoned.toInstant() );
 
         residentNew.setName(resident.getName());
         residentNew.setLastName(resident.getLastName());
@@ -77,7 +85,7 @@ public class ResidentsController implements ResidentsApi {
         residentNew.setContactName(resident.getContactName());
         residentNew.setContactNumber(resident.getContactNumber());
         residentNew.setContactRelationship(resident.getContactRelationship());
-        residentNew.setDateOfBirth(date);
+        residentNew.setDateOfBirth(resident.getDateOfBirth());
         residentNew.setPlaceOfBirth(resident.getPlaceOfBirth());
         residentNew.setNote(resident.getNote());
         residentNew.setOib(resident.getOib());
