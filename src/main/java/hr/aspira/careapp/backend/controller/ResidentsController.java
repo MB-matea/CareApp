@@ -98,7 +98,7 @@ public class ResidentsController implements ResidentsApi {
 
         List<Therapy> requestTherapyList = residentRequestBody.getTherapy();
 
-        for (Therapy therapy : requestTherapyList){
+        for (Therapy therapy : requestTherapyList) {
             hr.aspira.careapp.backend.model.entities.Therapy therapyNew = new hr.aspira.careapp.backend.model.entities.Therapy();
 
             therapyNew.setName(therapy.getName());

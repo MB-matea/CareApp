@@ -1,6 +1,9 @@
 package hr.aspira.careapp.backend.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import hr.aspira.careapp.backend.common.LocalDateDeserializer;
 import hr.aspira.careapp.backend.model.entities.Resident;
 import hr.aspira.careapp.backend.model.entities.User;
 import hr.aspira.careapp.backend.model.repositories.ResidentRepository;
@@ -30,6 +33,15 @@ public class TasksController implements TasksApi {
 
     @Autowired
     private ResidentRepository residentRepository;
+
+    private final ObjectMapper objectMapper;
+
+    public TasksController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+        this.objectMapper.registerModule(module);
+    }
 
     @Override
     public ResponseEntity<ReturnId> tasksPost(CreateNewTaskRequestBody createNewTaskRequestBody) {
@@ -123,5 +135,42 @@ public class TasksController implements TasksApi {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
+    }
+
+
+    @Override
+    public ResponseEntity<GetAllTasksForSpecificResidentResponseBody> tasksResidentResidentIdGet(Integer residentId) {
+        Optional<hr.aspira.careapp.backend.model.entities.Resident> residents = residentRepository.findById(residentId);
+
+        if(!residents.isPresent()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
+        hr.aspira.careapp.backend.model.entities.Resident resident = residents.get();
+        List<hr.aspira.careapp.backend.model.entities.Task> tasks = resident.getTasks();
+        List<Task> tasksReturned = new ArrayList<>();
+
+        for (hr.aspira.careapp.backend.model.entities.Task task : tasks){
+            Task taskReturned =  new Task();
+
+            taskReturned.setTaskId(task.getId());
+            taskReturned.setResidentId(task.getResident().getId());
+            taskReturned.setResidentName(task.getResident().getName());
+            taskReturned.setResidentLastName(task.getResident().getLastName());
+            taskReturned.setUserId(task.getUser().getId());
+            taskReturned.setUserName(task.getUser().getName());
+            taskReturned.setUserLastName(task.getUser().getLastName());
+            taskReturned.setDate(task.getDate());
+            taskReturned.setIsDone(task.getIsDone());
+
+            tasksReturned.add(taskReturned);
+        }
+
+        // RESPONSE
+        GetAllTasksForSpecificResidentResponseBody response = new GetAllTasksForSpecificResidentResponseBody();
+        response.setTasks(tasksReturned);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
