@@ -25,22 +25,24 @@ public class UsersController implements UsersApi {
     @Autowired
     private TaskRepository taskRepository;
 
+
     @Override
-    public ResponseEntity<List<Object>> usersGet() {
+    public ResponseEntity<GetAllUsersResponseBody> usersGet() {
         List<hr.aspira.careapp.backend.model.entities.User> users = userRepository.findAll();
-        List<Object> usersReturned = new ArrayList<>();
-        List<Object> response = new ArrayList<>();
+        List <GetAllUsersResponseBodyUsers> usersReturned = new ArrayList<>();
 
         for(hr.aspira.careapp.backend.model.entities.User user : users){
-            User userReturned = new User();
+            GetAllUsersResponseBodyUsers userReturned = new GetAllUsersResponseBodyUsers();
 
             userReturned.setUserId(user.getId());
             userReturned.setName(user.getName());
             userReturned.setLastName(user.getLastName());
 
             usersReturned.add(userReturned);
-            response.add(userReturned);
         }
+
+        GetAllUsersResponseBody response = new GetAllUsersResponseBody();
+        response.setUsers(usersReturned);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -59,6 +61,8 @@ public class UsersController implements UsersApi {
         userNew.setUserName(user.getUserName());
         userNew.setPassword(user.getPassword());
         userNew.setIsAdmin(user.getIsAdmin());
+
+        userRepository.save(userNew);
 
         ReturnId response = new ReturnId();
         response.setId(userNew.getId());

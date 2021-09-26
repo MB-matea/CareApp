@@ -95,7 +95,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/api/CareAppApiSpec_0.0.5.yaml</inputSpec>
+							<inputSpec>${project.basedir}/api/CareAppApiSpec_0.0.6.yaml</inputSpec>
 							<generatorName>spring</generatorName>
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>
