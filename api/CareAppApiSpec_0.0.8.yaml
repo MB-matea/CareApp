@@ -271,11 +271,7 @@ paths:
         required: true
         schema:
           type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Task'
+
       responses:
         200:
           description: Update operation success
@@ -550,6 +546,8 @@ components:
           type: string
         residentLastName:
           type: string
+        room:
+          type: integer
           
     GetSpecificUserResponseBody:
       type: object

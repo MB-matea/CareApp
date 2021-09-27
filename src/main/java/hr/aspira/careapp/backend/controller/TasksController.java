@@ -56,6 +56,7 @@ public class TasksController implements TasksApi {
         taskNew.setUser(user.get());
         taskNew.setResident(resident.get());
         taskNew.setDate(createNewTaskRequestBody.getDate());
+        taskNew.setIsDone(false);
 
         taskRepository.save(taskNew);
 
@@ -77,7 +78,7 @@ public class TasksController implements TasksApi {
     }
 
     @Override
-    public ResponseEntity<Void> tasksTaskIdPut(Integer taskId, Task task) {
+    public ResponseEntity<Void> tasksTaskIdPut(Integer taskId) {
         Optional<hr.aspira.careapp.backend.model.entities.Task> tasksNew = taskRepository.findById(taskId);
         if(!tasksNew.isPresent()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -85,16 +86,7 @@ public class TasksController implements TasksApi {
 
         hr.aspira.careapp.backend.model.entities.Task taskNew = tasksNew.get();
 
-        Optional<Resident> resident = residentRepository.findById(task.getResidentId());
-        Optional<User> user = userRepository.findById(task.getUserId());
-        if(resident.isEmpty() || user.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        taskNew.setIsDone(task.getIsDone());
-        taskNew.setDate(task.getDate());
-        taskNew.setResident(resident.get());
-        taskNew.setUser(user.get());
+        taskNew.setIsDone(true);
 
         taskRepository.save(taskNew);
 
@@ -121,6 +113,7 @@ public class TasksController implements TasksApi {
                 taskReturned.setResidentId(task.getResident().getId());
                 taskReturned.setResidentName(task.getResident().getName());
                 taskReturned.setResidentLastName(task.getResident().getLastName());
+                taskReturned.setRoom(task.getResident().getRoom());
                 taskReturned.setUserId(task.getUser().getId());
                 taskReturned.setDate(task.getDate());
                 taskReturned.setIsDone(task.getIsDone());
